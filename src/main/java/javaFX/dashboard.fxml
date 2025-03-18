@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.gluonhq.charm.glisten.control.Avatar?>
+<?import com.gluonhq.charm.glisten.control.ProgressBar?>
+<?import com.gluonhq.charm.glisten.control.TextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaFX.Dashboard">
+   <children>
+      <TitledPane animated="false" layoutY="150.0" prefHeight="251.0" prefWidth="600.0" text="Pendekatan Pasar">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        </content>
+      </TitledPane>
+      <Avatar layoutX="397.0" layoutY="15.0">
+         <image>
+            <Image url="@../../../../../../OneDrive/Gambar/1317562.jpeg" />
+         </image>
+      </Avatar>
+      <TextField floatText="Wonokairun" layoutX="444.0" layoutY="14.0" />
+      <ProgressBar layoutX="363.0" layoutY="86.0" prefHeight="19.0" prefWidth="200.0" progress="0.37" />
+      <PieChart prefHeight="71.0" prefWidth="163.0" title="Bobot Pembanding">
+         <effect>
+            <Blend />
+         </effect>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </PieChart>
+   </children>
+</AnchorPane>
