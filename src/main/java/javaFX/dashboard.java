@@ -13,7 +13,7 @@ public class dashboard extends Application {
         StackPane root = new StackPane(label);
         Scene scene = new Scene(root, 600, 400);
 
-        primaryStage.setTitle("Appraisal Tools Dashboard");
+        primaryStage.setTitle("Valuer Tools Dashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
