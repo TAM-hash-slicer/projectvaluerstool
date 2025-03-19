@@ -23,7 +23,7 @@
             <Image url="@../../../../../../OneDrive/Gambar/1317562.jpeg" />
          </image>
       </Avatar>
-      <TextField floatText="Wonokairun" layoutX="444.0" layoutY="14.0" />
+      <TextField floatText="Super Wonokairun" layoutX="444.0" layoutY="14.0" />
       <ProgressBar layoutX="363.0" layoutY="86.0" prefHeight="19.0" prefWidth="200.0" progress="0.37" />
       <PieChart prefHeight="71.0" prefWidth="163.0" title="Bobot Pembanding">
          <effect>
