@@ -1,3 +1,5 @@
+package javaFX;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -11,7 +13,7 @@ public class dashboard extends Application {
         StackPane root = new StackPane(label);
         Scene scene = new Scene(root, 600, 400);
 
-        primaryStage.setTitle("JavaFX Dashboard");
+        primaryStage.setTitle("Valuer Tools Dashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
