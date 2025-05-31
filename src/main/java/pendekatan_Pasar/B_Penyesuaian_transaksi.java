@@ -1,4 +1,4 @@
-package org.example;
+package pendekatan_Pasar;
 
 public class B_Penyesuaian_transaksi {
     public static void main(String[] args) {

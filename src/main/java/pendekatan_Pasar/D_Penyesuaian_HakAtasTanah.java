@@ -1,4 +1,4 @@
-package org.example;
+package pendekatan_Pasar;
 
 public class D_Penyesuaian_HakAtasTanah {
     // Variabel public static untuk menyimpan jenis penyesuaian hasil

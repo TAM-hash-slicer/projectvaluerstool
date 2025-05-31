@@ -1,9 +1,23 @@
-package org.example;
+package pendekatan_Pasar;
+import pendekatan_Pasar.model.Subjek;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class A_Main {
+    public static void main(String[] args) {
+        // Data properti yang dinilai (subject)
+        Subjek subject = new Subjek();
+        subject.setId("SUBJ-001");
+        subject.setType("residensial");
+        subject.setLocation("Jakarta");
+        subject.setLandArea(120);
+        subject.setBuildingArea(90);
+        subject.setYearBuilt(2015);
+        subject.setTransactionPrice(0); // belum diketahui
+        subject.setTransactionDate(null);
+    };
     public static int[] penawaran_data_sampel = {528800000, 651000000, 590000000};
     public static LocalDate[] tanggal_Transaksi = {
             LocalDate.parse("2018-05-31"),
@@ -16,5 +30,5 @@ public class A_Main {
     public static String[] hak_atas_tanah = {"Hak Guna Bangunan", "Hak Guna Bangunan", "Hak Guna Bangunan"};
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+    // System.out.printf("Estimasi nilai pasar properti: Rp%,.2f\n", estimatedValue);
 }
