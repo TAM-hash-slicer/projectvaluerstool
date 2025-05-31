@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaFX.Dashboard">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.dashboardMain">
    <children>
       <TitledPane animated="false" layoutY="150.0" prefHeight="251.0" prefWidth="600.0" text="Pendekatan Pasar">
         <content>
@@ -20,7 +20,7 @@
       </TitledPane>
       <Avatar layoutX="397.0" layoutY="15.0">
          <image>
-            <Image url="@../../../../../../OneDrive/Gambar/1317562.jpeg" />
+
          </image>
       </Avatar>
       <TextField floatText="Super Wonokairun" layoutX="444.0" layoutY="14.0" />
