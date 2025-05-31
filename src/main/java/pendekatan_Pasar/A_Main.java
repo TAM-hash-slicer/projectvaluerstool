@@ -1,5 +1,9 @@
 package pendekatan_Pasar;
+
+import pendekatan_Pasar.dao.PropertyDAO;
+import pendekatan_Pasar.model.Pembanding;
 import pendekatan_Pasar.model.Subjek;
+import pendekatan_Pasar.service.PropertyValuationService;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -31,5 +35,14 @@ public class A_Main {
     public static String[] hak_atas_tanah = {"Hak Guna Bangunan", "Hak Guna Bangunan", "Hak Guna Bangunan"};
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    // System.out.printf("Estimasi nilai pasar properti: Rp%,.2f\n", estimatedValue);
+
+    // Ambil data properti pembanding
+    PropertyDAO dao = new PropertyDAO();
+    List<Pembanding> comparables = dao.getComparables();
+
+    // Lakukan penilaian
+    PropertyValuationService service = new PropertyValuationService();
+    double estimatedValue = service.estimateMarketValue(subject, comparables);
+
+    System.out.printf("Estimasi nilai pasar properti: Rp%,.2f\n", estimatedValue);
 }

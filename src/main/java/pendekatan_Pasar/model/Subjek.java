@@ -33,4 +33,12 @@ public class Subjek {
 
     public void setTransactionDate(Object o) {
     }
+
+    public double getLandArea() {
+        return landArea;
+    }
+
+    public double getBuildingArea() {
+        return buildingArea;
+    }
 }
