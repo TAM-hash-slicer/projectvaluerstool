@@ -1,0 +1,190 @@
+.root {
+    -fx-font-family: "System", sans-serif; /* Use system default for broader compatibility */
+    -fx-font-size: 13px;
+    -fx-base: #F0F0F0; /* Light grey base for the whole app */
+}
+
+/* --- Header --- */
+.header-bar {
+    -fx-background-color: #FFFFFF; /* White header */
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 0 0 1 0; /* Bottom border */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+.app-title {
+    -fx-font-size: 22px; /* Slightly smaller */
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50; /* Dark blue/grey */
+}
+
+.search-field {
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-prompt-text-fill: #95A5A6;
+}
+
+.user-name-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495E;
+}
+
+.icon-button { /* For notification or user profile if using icons */
+    -fx-background-color: transparent;
+    -fx-padding: 5px;
+    -fx-border-color: transparent;
+}
+.icon-button:hover {
+    -fx-background-color: #ECF0F1; /* Light hover */
+}
+
+
+/* --- Left Sidebar --- */
+.left-sidebar {
+    -fx-background-color: #34495E; /* Dark blue/grey sidebar */
+    -fx-padding: 10px 0 10px 0; /* Remove left/right padding if buttons fill width */
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ECF0F1; /* Light text */
+    -fx-font-size: 13px;
+    -fx-padding: 10px 20px; /* Consistent padding */
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-radius: 0; /* Sharp edges */
+    -fx-border-radius: 0;
+}
+.sidebar-button:hover {
+    -fx-background-color: #2C3E50; /* Slightly darker on hover */
+}
+.sidebar-button:focused { /* Or a class for active button */
+    -fx-background-color: #1ABC9C; /* Teal for active/focused */
+    -fx-text-fill: white;
+}
+.sidebar-section-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #95A5A6; /* Lighter grey for section titles */
+    -fx-padding: 8px 20px;
+    -fx-font-weight: bold;
+    text-transform: uppercase;
+}
+
+
+/* --- Center Area --- */
+.center-scroll-pane {
+    -fx-background-color: #ECF0F1; /* Light grey background for content area */
+}
+.dashboard-grid {
+    -fx-padding: 15px;
+}
+
+.dashboard-widget {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 15px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 2, 3);
+}
+
+.widget-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+    -fx-padding: 0 0 10px 0; /* Space below title */
+}
+
+/* KPI Box */
+.kpi-grid {
+    -fx-padding: 10px 0;
+}
+.kpi-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #7F8C8D; /* Grey text for KPI labels */
+}
+.kpi-value {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2980B9; /* Blue for KPI values */
+    -fx-alignment: CENTER_RIGHT;
+}
+
+/* Charts */
+.chart-plot-background {
+    -fx-background-color: #FAFAFA;
+}
+.chart-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.axis {
+    -fx-tick-label-fill: #555;
+    -fx-font-size: 10px;
+}
+.bar-chart .chart-bar {
+    -fx-bar-fill: #3498DB; /* Default bar color */
+}
+.bar-chart .chart-bar:hover {
+    -fx-bar-fill: #2980B9;
+}
+
+/* ListView */
+.list-view {
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 1px;
+}
+.list-cell:odd {
+    -fx-background-color: #FFFFFF;
+}
+.list-cell:even {
+    -fx-background-color: #F9F9F9;
+}
+.list-cell:selected {
+    -fx-background-color: #AED6F1; /* Light blue selection */
+    -fx-text-fill: #1A5276;
+}
+
+/* Quick Action Buttons */
+.quick-action-button {
+    -fx-background-color: #1ABC9C; /* Teal */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-padding: 10px 15px;
+}
+.quick-action-button:hover {
+    -fx-background-color: #16A085; /* Darker teal */
+}
+
+
+/* --- Right Sidebar Tools --- */
+.right-sidebar-tools {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 0 0 0 1px; /* Left border */
+    -fx-alignment: TOP_CENTER;
+}
+
+.tool-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #34495E;
+    -fx-font-size: 11px; /* Smaller font for tool buttons */
+    -fx-padding: 8px 5px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-content-display: TOP; /* Icon on top, text below */
+    -fx-graphic-text-gap: 3px;
+    -fx-max-width: Infinity; /* Fill width of sidebar */
+    -fx-text-alignment: CENTER;
+    -fx-wrap-text: true;
+}
+.tool-button:hover {
+    -fx-background-color: #ECF0F1; /* Light grey hover */
+    -fx-text-fill: #2980B9;
+}
+.tool-button .ikonli-font-icon { /* If using Ikonli for icons */
+    -fx-icon-size: 24px;
+    -fx-icon-color: #34495E;
+}
+.tool-button:hover .ikonli-font-icon {
+    -fx-icon-color: #2980B9;
+}

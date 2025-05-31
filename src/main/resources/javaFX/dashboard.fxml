@@ -1,37 +1,180 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.gluonhq.charm.glisten.control.Avatar?>
-<?import com.gluonhq.charm.glisten.control.ProgressBar?>
-<?import com.gluonhq.charm.glisten.control.TextField?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.effect.Blend?>
-<?import javafx.scene.image.Image?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.dashboardMain">
-   <children>
-      <TitledPane animated="false" layoutY="150.0" prefHeight="251.0" prefWidth="600.0" text="Pendekatan Pasar">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-        </content>
-      </TitledPane>
-      <Avatar layoutX="397.0" layoutY="15.0">
-         <image>
-
-         </image>
-      </Avatar>
-      <TextField floatText="Super Wonokairun" layoutX="444.0" layoutY="14.0" />
-      <ProgressBar layoutX="363.0" layoutY="86.0" prefHeight="19.0" prefWidth="200.0" progress="0.37" />
-      <PieChart prefHeight="71.0" prefWidth="163.0" title="Bobot Pembanding">
-         <effect>
-            <Blend />
-         </effect>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-      </PieChart>
-   </children>
-</AnchorPane>
+<BorderPane fx:id="mainLayout" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.dashboardMain">
+   <top>
+      <AnchorPane prefHeight="60.0" styleClass="header-bar" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <padding>
+                  <Insets left="20.0" right="20.0" />
+               </padding>
+               <children>
+                  <Label styleClass="app-title" text="Valuer Tools">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="searchTextField" maxWidth="400.0" promptText="Cari proyek, klien, properti..." styleClass="search-field" HBox.hgrow="ALWAYS" />
+                  <HBox alignment="CENTER_RIGHT" spacing="15.0" HBox.hgrow="ALWAYS">
+                     <children><Button fx:id="notificationsButton" mnemonicParsing="false" styleClass="icon-button" text="Notifikasi (0)" />
+                        <Label fx:id="userNameLabel" styleClass="user-name-label" text="Nama Pengguna" />
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+   </top>
+   <left>
+      <VBox prefWidth="220.0" spacing="5.0" styleClass="left-sidebar" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+         <children>
+            <Button fx:id="navDashboardButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Dashboard" />
+            <Label styleClass="sidebar-section-label" text="Manajemen Proyek">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin></Label>
+            <Button fx:id="navAllProjectsButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Semua Proyek Penilaian" />
+            <Button fx:id="navActiveProjectsButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Proyek Aktif" />
+            <Button fx:id="navCompletedProjectsButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Proyek Selesai" />
+            <Button fx:id="navTaskArchiveLeftButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Arsip Tugas" />
+            <Label styleClass="sidebar-section-label" text="Database &amp; Input">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin></Label>
+            <Button fx:id="navClientPropertiesButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Data Properti Klien" />
+            <Button fx:id="navComparableDbButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Database Pembanding" />
+            <Button fx:id="navInputComparableLeftButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Input Data Pembanding" />
+            <Button fx:id="navClientManagementButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Manajemen Klien" />
+            <Label styleClass="sidebar-section-label" text="Laporan">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin></Label>
+            <Button fx:id="navCreateReportButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Buat Laporan Baru" />
+            <Button fx:id="navReportTemplatesButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Template Laporan" />
+            <Button fx:id="navSavedReportsButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Daftar Laporan" />
+            <VBox VBox.vgrow="ALWAYS" />
+            <Separator prefWidth="200.0" />
+            <Button fx:id="navSettingsButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="sidebar-button" text="Pengaturan Aplikasi" />
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="center-scroll-pane" BorderPane.alignment="CENTER">
+         <content>
+            <GridPane hgap="15.0" styleClass="dashboard-grid" vgap="15.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="280.0" prefHeight="280.0" vgrow="NEVER" /> <RowConstraints minHeight="10.0" prefHeight="250.0" vgrow="SOMETIMES" /> <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" /> </rowConstraints>
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+               <children>
+                  <VBox styleClass="dashboard-widget" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                     <children>
+                        <Label styleClass="widget-title" text="Histogram Status Tugas" />
+                        <BarChart fx:id="taskHistogramChart" VBox.vgrow="ALWAYS">
+                           <xAxis>
+                              <CategoryAxis fx:id="histogramCategoryAxis" side="BOTTOM" />
+                           </xAxis>
+                           <yAxis>
+                              <NumberAxis fx:id="histogramNumberAxis" side="LEFT" />
+                           </yAxis>
+                        </BarChart>
+                     </children>
+                  </VBox>
+                  <VBox spacing="15.0" styleClass="dashboard-widget" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                     <children>
+                        <Label styleClass="widget-title" text="Statistik Kunci Penilai" />
+                        <GridPane styleClass="kpi-grid" vgap="10.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label styleClass="kpi-label" text="Data Pembanding:" />
+                              <Label fx:id="comparableDataCountLabel" styleClass="kpi-value" text="0" GridPane.columnIndex="1" />
+                              <Label styleClass="kpi-label" text="Pekerjaan Selesai:" GridPane.rowIndex="1" />
+                              <Label fx:id="completedProjectsLabel" styleClass="kpi-value" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label styleClass="kpi-label" text="Capaian IKU:" GridPane.rowIndex="2" />
+                              <Label fx:id="ikuPercentageLabel" styleClass="kpi-value" text="0%" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </VBox>
+                  <VBox styleClass="dashboard-widget" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                     <children>
+                        <Label styleClass="widget-title" text="Proyek Penilaian Aktif Saya" />
+                        <ListView fx:id="activeProjectsListView" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+                  <VBox styleClass="dashboard-widget" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <Label styleClass="widget-title" text="Prioritas Tugas Saya" />
+                        <ListView fx:id="priorityTasksListView" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+                  <VBox spacing="10.0" styleClass="dashboard-widget" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                     <children>
+                        <Label styleClass="widget-title" text="Akses Cepat" />
+                        <HBox spacing="10.0">
+                           <children>
+                              <Button fx:id="quickActionNewProjectButton" maxWidth="Infinity" mnemonicParsing="false" styleClass="quick-action-button" text="+ Proyek Baru" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="quickActionSearchComparableButton" maxWidth="Infinity" mnemonicParsing="false" styleClass="quick-action-button" text="Cari Data Pembanding" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="quickActionCreateReportButton" maxWidth="Infinity" mnemonicParsing="false" styleClass="quick-action-button" text="Buat Laporan Cepat" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </GridPane>
+         </content>
+      </ScrollPane>
+   </center>
+   <right>
+      <VBox prefWidth="70.0" spacing="10.0" styleClass="right-sidebar-tools" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+         </padding>
+         <children>
+            <Button fx:id="marketApproachButton" contentDisplay="TOP" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tool-button" text="Pasar">
+            </Button>
+            <Button fx:id="costApproachButton" contentDisplay="TOP" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tool-button" text="Biaya">
+            </Button>
+            <Button fx:id="incomeApproachButton" contentDisplay="TOP" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tool-button" text="Pendapatan">
+            </Button>
+            <Button fx:id="incomeApproachButton1" contentDisplay="TOP" layoutX="15.0" layoutY="102.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tool-button" text="Propsus" />
+            <Separator prefWidth="200.0" />
+         </children>
+      </VBox>
+   </right>
+</BorderPane>

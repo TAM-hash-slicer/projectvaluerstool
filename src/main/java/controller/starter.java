@@ -12,34 +12,30 @@ import java.net.URL;
 public class starter extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        try {
-            // Path to your FXML file.
-            // Make sure this path is correct. If dashboard.fxml is in src/main/resources/javaFX/,
-            // then "/javaFX/dashboard.fxml" should work.
-            URL fxmlLocation = getClass().getResource("/javaFX/dashboard.fxml");
-            if (fxmlLocation == null) {
-                System.err.println("Cannot find FXML file. Check the path.");
-                // You might want to throw an exception or show an alert here
-                return;
-            }
-
-            Parent root = FXMLLoader.load(fxmlLocation);
-
-            Scene scene = new Scene(root);
-
-            primaryStage.setTitle("My Dashboard");
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-        } catch (IOException e) {
-            System.err.println("Error loading FXML or setting up the stage:");
-            e.printStackTrace();
-            // Handle the exception, maybe show an error dialog to the user
-        } catch (Exception e) {
-            System.err.println("An unexpected error occurred:");
-            e.printStackTrace();
+    public void start(Stage primaryStage) throws IOException {
+        // Path relative to the resources folder
+        URL fxmlLocation = getClass().getResource("/javaFX/dashboard.fxml");
+        if (fxmlLocation == null) {
+            System.err.println("Cannot find FXML file: /javaFX/dashboard.fxml");
+            System.err.println("Please ensure it's in: C:\\Project_Valuers_Tools\\src\\main\\resources\\javaFX\\dashboard.fxml");
+            return;
         }
+        FXMLLoader loader = new FXMLLoader(fxmlLocation);
+        Parent root = loader.load();
+
+        Scene scene = new Scene(root, 1366, 768); // Adjust size as needed
+
+        URL cssLocation = getClass().getResource("/javaFX/dashboard-styles.css");
+        if (cssLocation != null) {
+            scene.getStylesheets().add(cssLocation.toExternalForm());
+        } else {
+            System.err.println("Cannot find CSS file: /javaFX/dashboard-styles.css");
+            System.err.println("Expected in: C:\\Project_Valuers_Tools\\src\\main\\resources\\javaFX\\dashboard-styles.css");
+        }
+
+        primaryStage.setTitle("Valuer Tools Dashboard");
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
