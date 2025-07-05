@@ -173,6 +173,7 @@
             <Button fx:id="incomeApproachButton" contentDisplay="TOP" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tool-button" text="Pendapatan">
             </Button>
             <Button fx:id="incomeApproachButton1" contentDisplay="TOP" layoutX="15.0" layoutY="102.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tool-button" text="Propsus" />
+            <Button fx:id="incomeApproachButton11" contentDisplay="TOP" layoutX="15.0" layoutY="143.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tool-button" text="PBB P5L" />
             <Separator prefWidth="200.0" />
             <Button fx:id="propertiKhususButton" contentDisplay="TOP" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tool-button" text="Propsus">
             </Button>
