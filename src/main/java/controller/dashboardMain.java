@@ -2,7 +2,6 @@ package controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader; // Penting untuk memuat FXML baru
 import javafx.fxml.Initializable;
@@ -13,7 +12,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.Node;
-import javafx.scene.control.cell.PropertyValueFactory; // For TableView if used
 import javafx.scene.layout.BorderPane; // Jika root layout Anda adalah BorderPane
 // import javafx.scene.layout.AnchorPane; // Tidak digunakan secara langsung di sini untuk penggantian konten
 import model.ComparableData;
@@ -63,6 +61,7 @@ public class dashboardMain implements Initializable {
     @FXML private Button marketApproachButton;
     @FXML private Button costApproachButton;
     @FXML private Button incomeApproachButton;
+    @FXML private Button propertiKhususButton;
     @FXML private Button listComparableDataButton;
     @FXML private Button taskArchiveButton;
     @FXML private Button inputComparableDataButton;
@@ -209,6 +208,10 @@ public class dashboardMain implements Initializable {
             System.out.println("Tool: Pendekatan Pendapatan clicked");
             // loadPage("/javaFX/IncomeApproachView.fxml");
             showAlert("Info", "Halaman Pendekatan Pendapatan belum diimplementasikan.");
+        });
+        propertiKhususButton.setOnAction(event -> {
+            System.out.println("Tool: Penilaian Tower clicked - Attempting to load view...");
+            loadPage("/javaFX/propertiKhusus.fxml"); // UPDATED FILENAME
         });
 
         searchTextField.setOnAction(e -> System.out.println("Search initiated: " + searchTextField.getText()));
