@@ -6,20 +6,23 @@ public class Project {
     private String id;
     private String clientName;
     private String assetType;
-    private String status; // e.g., "Inspeksi Lapangan", "Analisis Data", "Final"
+    private String status;
     private LocalDate dueDate;
-    private double progress; // 0.0 to 1.0 for progress bar
+    private double progress;
+    private String valuationApproach; // The new field for filtering
 
-    public Project(String id, String clientName, String assetType, String status, LocalDate dueDate, double progress) {
+    public Project(String id, String clientName, String assetType, String status, LocalDate dueDate, double progress, String valuationApproach) {
         this.id = id;
         this.clientName = clientName;
         this.assetType = assetType;
         this.status = status;
         this.dueDate = dueDate;
         this.progress = progress;
+        this.valuationApproach = valuationApproach; // Assign the new value
     }
 
-    // Getters and Setters (or make fields final if immutable after creation)
+    // --- Getters and Setters ---
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getClientName() { return clientName; }
@@ -33,9 +36,20 @@ public class Project {
     public double getProgress() { return progress; }
     public void setProgress(double progress) { this.progress = progress; }
 
+    // New getter and setter for the valuation approach
+    public String getValuationApproach() {
+        return valuationApproach;
+    }
+
+    public void setValuationApproach(String valuationApproach) {
+        this.valuationApproach = valuationApproach;
+    }
+
+
     @Override
     public String toString() {
-        return String.format("ID: %s, Klien: %s, Aset: %s, Status: %s, Due: %s",
-                id, clientName, assetType, status, dueDate.toString());
+        // You can add the new field here for easier debugging
+        return String.format("ID: %s, Klien: %s, Aset: %s, Status: %s, Pendekatan: %s",
+                id, clientName, assetType, status, valuationApproach);
     }
 }

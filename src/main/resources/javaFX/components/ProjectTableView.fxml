@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.components.ProjectTableViewController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="filter-bar">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <children>
+                <TextField fx:id="searchField" promptText="Cari berdasarkan klien atau properti..." HBox.hgrow="ALWAYS" />
+                <Label text="Status:" />
+                <ComboBox fx:id="statusFilterComboBox" promptText="Semua Status" />
+                <Label text="Item per Halaman:" />
+                <ComboBox fx:id="rowsPerPageComboBox" />
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="projectTableView" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="idColumn" prefWidth="75.0" text="ID Proyek" />
+                <TableColumn fx:id="clientNameColumn" prefWidth="200.0" text="Nama Klien" />
+                <TableColumn fx:id="propertyDescColumn" prefWidth="250.0" text="Deskripsi Properti" />
+                <TableColumn fx:id="approachColumn" prefWidth="150.0" text="Pendekatan" />
+                <TableColumn fx:id="statusColumn" prefWidth="120.0" text="Status" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </center>
+    <bottom>
+        <Pagination fx:id="pagination" pageCount="1" BorderPane.alignment="CENTER" />
+    </bottom>
+</BorderPane>

@@ -96,11 +96,11 @@ public class dashboardMain implements Initializable {
     private void loadMockData() {
         Random random = new Random();
         allProjects = FXCollections.observableArrayList();
-        allProjects.add(new Project("P001", "PT. Sejahtera", "Tanah & Bangunan Kantor", "Analisis Data", LocalDate.now().plusWeeks(2), 0.6));
-        allProjects.add(new Project("P002", "Bpk. Hartono", "Rumah Tinggal", "Inspeksi Lapangan", LocalDate.now().plusDays(5), 0.25));
-        allProjects.add(new Project("P003", "CV. Maju Jaya", "Gudang", "Penyusunan Draf", LocalDate.now().plusWeeks(1), 0.8));
-        allProjects.add(new Project("P004", "Ibu Ratna", "Apartemen", "Review Internal", LocalDate.now().plusDays(3), 0.9));
-        allProjects.add(new Project("P005", "Yayasan Bakti", "Sekolah", "Analisis Data", LocalDate.now().plusWeeks(3), 0.5));
+        allProjects.add(new Project("P001", "PT. Sejahtera", "Tanah & Bangunan Kantor", "Analisis Data", LocalDate.now().plusWeeks(2), 0.6, "Pendekatan Pasar"));
+        allProjects.add(new Project("P002", "Bpk. Hartono", "Rumah Tinggal", "Inspeksi Lapangan", LocalDate.now().plusDays(5), 0.25, "Pendekatan Pasar"));
+        allProjects.add(new Project("P003", "CV. Maju Jaya", "Gudang", "Penyusunan Draf", LocalDate.now().plusWeeks(1), 0.8, "Pendekatan Biaya"));
+        allProjects.add(new Project("P004", "Ibu Ratna", "Apartemen", "Review Internal", LocalDate.now().plusDays(3), 0.9, "Pendekatan Pendapatan"));
+        allProjects.add(new Project("P005", "Yayasan Bakti", "Sekolah", "Analisis Data", LocalDate.now().plusWeeks(3), 0.5, "Pendekatan Biaya"));
 
         allTasks = FXCollections.observableArrayList();
         allTasks.add(new Task("T001", "Finalisasi Laporan P003", "P003", Task.Priority.TINGGI, LocalDate.now().plusDays(2), Task.Status.ON_PROGRESS));
@@ -206,9 +206,10 @@ public class dashboardMain implements Initializable {
         });
         incomeApproachButton.setOnAction(e -> {
             System.out.println("Tool: Pendekatan Pendapatan clicked");
-            // loadPage("/javaFX/IncomeApproachView.fxml");
-            showAlert("Info", "Halaman Pendekatan Pendapatan belum diimplementasikan.");
+            // CORRECTED: Load the correct FXML file
+            loadPage("/javaFX/Pendekatan_Pendapatan/Pendekatan_Pendapatan_Home.fxml");
         });
+
         propertiKhususButton.setOnAction(event -> {
             System.out.println("Tool: Penilaian Tower clicked - Attempting to load view...");
             loadPage("/javaFX/propertiKhusus.fxml"); // UPDATED FILENAME
