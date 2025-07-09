@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<!--
+  PENTING: Pastikan fx:controller menunjuk ke class yang benar.
+-->
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.penilaian_tower.PenilaianTowerHomeController"
+            prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #F9F9F9;">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20"/>
+    </padding>
+    <top>
+        <Label text="Penilaian Properti Khusus - Tower" BorderPane.alignment="CENTER_LEFT">
+            <font>
+                <Font name="System Bold" size="24.0"/>
+            </font>
+        </Label>
+    </top>
+    <center>
+        <!-- Menggunakan VBox untuk menata kontrol secara vertikal di tengah -->
+        <VBox alignment="TOP_CENTER" spacing="20.0" maxWidth="450.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Untuk memulai, silakan pilih jenis tower yang akan dinilai dari daftar di bawah ini." textAlignment="CENTER" wrapText="true">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+
+                <!-- ComboBox untuk memilih jenis tower -->
+                <ComboBox fx:id="towerTypeComboBox" maxWidth="1.7976931348623157E308" promptText="Pilih Jenis Tower"/>
+
+                <!-- Tombol untuk melanjutkan proses -->
+                <Button fx:id="startButton" mnemonicParsing="false" text="Mulai Penilaian" maxWidth="1.7976931348623157E308" styleClass="quick-action-button"/>
+            </children>
+            <BorderPane.margin>
+                <Insets top="50.0"/>
+            </BorderPane.margin>
+        </VBox>
+    </center>
+</BorderPane>

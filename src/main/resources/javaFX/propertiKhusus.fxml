@@ -12,11 +12,11 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
     <children>
-        <Label text="Halaman Pendekatan Pasar" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0">
+        <Label text="Halaman Pendekatan Properti Khusus" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0">
             <font>
                 <Font name="System Bold" size="24.0" />
             </font>
         </Label>
-        <Label text="Konten untuk alat Pendekatan Pasar akan ada di sini..." AnchorPane.topAnchor="70.0" AnchorPane.leftAnchor="20.0" />
+        <Label text="Konten untuk alat Pendekatan Properti Khusus akan ada di sini..." AnchorPane.topAnchor="70.0" AnchorPane.leftAnchor="20.0" />
     </children>
 </AnchorPane>

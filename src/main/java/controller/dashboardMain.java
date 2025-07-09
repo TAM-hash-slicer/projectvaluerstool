@@ -210,9 +210,12 @@ public class dashboardMain implements Initializable {
             loadPage("/javaFX/Pendekatan_Pendapatan/Pendekatan_Pendapatan_Home.fxml");
         });
 
+        // ... di dalam method setupActionHandlers() di dashboardMain.java
+
         propertiKhususButton.setOnAction(event -> {
             System.out.println("Tool: Penilaian Tower clicked - Attempting to load view...");
-            loadPage("/javaFX/propertiKhusus.fxml"); // UPDATED FILENAME
+            // PERBAIKI PATH INI: Arahkan ke file FXML yang baru kita buat
+            loadPage("/javaFX/penilaian_tower/penilaian_tower_home.fxml");
         });
 
         searchTextField.setOnAction(e -> System.out.println("Search initiated: " + searchTextField.getText()));
