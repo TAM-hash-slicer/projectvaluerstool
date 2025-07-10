@@ -17,6 +17,7 @@ import javafx.scene.layout.BorderPane; // Jika root layout Anda adalah BorderPan
 import model.ComparableData;
 import model.Project;
 import model.Task;
+import service.NavigationService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -80,8 +81,10 @@ public class dashboardMain implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (mainLayout != null) {
+            NavigationService.getInstance().setMainContentPane(mainLayout);
             this.originalDashboardCenterContent = mainLayout.getCenter();
-            // ... (logika error handling jika null) ...
+        } else {
+            System.err.println("CRITICAL: mainLayout is null. NavigationService cannot be initialized.");
         }
         loadMockData();
         userNameLabel.setText("Budi Penilai");
@@ -197,25 +200,25 @@ public class dashboardMain implements Initializable {
 
         marketApproachButton.setOnAction(event -> {
             System.out.println("Tool: Pendekatan Pasar clicked - Attempting to load view...");
-            loadPage("/javaFX/pendekatanPasar.fxml"); // UPDATED FILENAME
-        });
-        costApproachButton.setOnAction(e -> {
-            System.out.println("Tool: Pendekatan Biaya clicked");
-            // loadPage("/javaFX/CostApproachView.fxml");
-            showAlert("Info", "Halaman Pendekatan Biaya belum diimplementasikan.");
-        });
-        incomeApproachButton.setOnAction(e -> {
-            System.out.println("Tool: Pendekatan Pendapatan clicked");
-            // CORRECTED: Load the correct FXML file
-            loadPage("/javaFX/Pendekatan_Pendapatan/Pendekatan_Pendapatan_Home.fxml");
+            // USE THE SERVICE
+            NavigationService.getInstance().navigate("/javaFX/pendekatanPasar.fxml");
         });
 
-        // ... di dalam method setupActionHandlers() di dashboardMain.java
+        costApproachButton.setOnAction(e -> {
+            System.out.println("Tool: Pendekatan Biaya clicked");
+            showAlert("Info", "Halaman Pendekatan Biaya belum diimplementasikan.");
+        });
+
+        incomeApproachButton.setOnAction(e -> {
+            System.out.println("Tool: Pendekatan Pendapatan clicked");
+            // USE THE SERVICE instead of the old loadPage() method
+            NavigationService.getInstance().navigate("/javaFX/Pendekatan_Pendapatan/Pendekatan_Pendapatan_Home.fxml");
+        });
 
         propertiKhususButton.setOnAction(event -> {
             System.out.println("Tool: Penilaian Tower clicked - Attempting to load view...");
-            // PERBAIKI PATH INI: Arahkan ke file FXML yang baru kita buat
-            loadPage("/javaFX/penilaian_tower/penilaian_tower_home.fxml");
+            // USE THE SERVICE
+            NavigationService.getInstance().navigate("/javaFX/penilaian_tower/penilaian_tower_home.fxml");
         });
 
         searchTextField.setOnAction(e -> System.out.println("Search initiated: " + searchTextField.getText()));

@@ -1,5 +1,7 @@
 package model;
 
+import model.PendapatanData.PendekatanPendapatanData; // 1. Add the import
+
 /**
  * Central data model for a single valuation project.
  * This class acts as a container for all data related to the project,
@@ -14,7 +16,7 @@ public class ValuationModel {
     // --- Branches for each valuation approach ---
     private PendekatanPasarData pendekatanPasar;
     // private PendekatanBiayaData pendekatanBiaya;     // Future branch for Cost Approach
-    // private PendekatanPendapatanData pendekatanPendapatan; // Future branch for Income Approach
+    private PendekatanPendapatanData pendekatanPendapatan; // 2. Uncomment the field
 
     /**
      * Constructor to initialize the model and its branches.
@@ -24,7 +26,7 @@ public class ValuationModel {
         // Initialize all branches to ensure they are not null
         this.pendekatanPasar = new PendekatanPasarData();
         // this.pendekatanBiaya = new PendekatanBiayaData();
-        // this.pendekatanPendapatan = new PendekatanPendapatanData();
+        this.pendekatanPendapatan = new PendekatanPendapatanData(); // 3. Initialize in constructor
     }
 
     // --- Getters and Setters ---
@@ -59,5 +61,14 @@ public class ValuationModel {
 
     public void setPendekatanPasar(PendekatanPasarData pendekatanPasar) {
         this.pendekatanPasar = pendekatanPasar;
+    }
+
+    // 4. Add the getter and setter for the new branch
+    public PendekatanPendapatanData getPendekatanPendapatan() {
+        return pendekatanPendapatan;
+    }
+
+    public void setPendekatanPendapatan(PendekatanPendapatanData pendekatanPendapatan) {
+        this.pendekatanPendapatan = pendekatanPendapatan;
     }
 }
