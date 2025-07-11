@@ -21,7 +21,7 @@ import java.util.Optional;
 public class LoadProjectDialogController {
 
     // A private record to hold all necessary info for display and selection.
-    private record SavedProjectInfo(String saveKey, String displayName, long timestamp) {}
+    private record SavedProjectInfo(String saveKey, String saveName, String objectName, long timestamp) {}
 
     private enum SortMode {
         NAME_ASC("Name (A-Z)"),
@@ -38,10 +38,12 @@ public class LoadProjectDialogController {
     @FXML private TextField searchField;
     @FXML private ComboBox<SortMode> sortComboBox;
     @FXML private TableView<SavedProjectInfo> projectsTableView;
-    @FXML private TableColumn<SavedProjectInfo, String> projectNameColumn;
+    @FXML private TableColumn<SavedProjectInfo, String> saveNameColumn; // Renamed for clarity
+    @FXML private TableColumn<SavedProjectInfo, String> objectNameColumn; // New column
     @FXML private TableColumn<SavedProjectInfo, String> lastSavedColumn;
     @FXML private Button loadButton;
     @FXML private Button cancelButton;
+    @FXML private Button deleteButton;
 
     // --- Class Fields ---
     private final SaveAndLoadService saveAndLoadService = SaveAndLoadService.getInstance();
@@ -65,7 +67,8 @@ public class LoadProjectDialogController {
     }
 
     private void setupTable() {
-        projectNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().displayName()));
+        saveNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().saveName()));
+        objectNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().objectName()));
         lastSavedColumn.setCellValueFactory(cellData -> {
             long timestamp = cellData.getValue().timestamp();
             if (timestamp == 0) {
@@ -83,20 +86,24 @@ public class LoadProjectDialogController {
                 saveAndLoadService.loadProgress(key, PendekatanPendapatanData.class).ifPresent(data -> {
                     boolean matchesFilter = (requiredProjectType == null || requiredProjectType.isBlank() || requiredProjectType.equals(data.getProjectTypeIdentifier()));
                     if (matchesFilter) {
-                        String name = data.getObjectName() != null && !data.getObjectName().isBlank() ? data.getObjectName() : key;
-                        masterData.add(new SavedProjectInfo(key, name, data.getLastSavedTimestamp()));
+                        String saveName = (data.getSaveName() != null && !data.getSaveName().isBlank()) ? data.getSaveName() : "Untitled Save";
+                        String objectName = (data.getObjectName() != null && !data.getObjectName().isBlank()) ? data.getObjectName() : "Untitled Object";
+                        masterData.add(new SavedProjectInfo(key, saveName, objectName, data.getLastSavedTimestamp()));
                     }
                 })
         );
     }
 
+
     private void setupFilteringAndSorting() {
-        // 1. Wrap the master data in a FilteredList for searching.
         FilteredList<SavedProjectInfo> filteredData = new FilteredList<>(masterData, p -> true);
         searchField.textProperty().addListener((obs, oldVal, newVal) ->
                 filteredData.setPredicate(project -> {
                     if (newVal == null || newVal.isEmpty()) return true;
-                    return project.displayName().toLowerCase().contains(newVal.toLowerCase());
+                    String lowerCaseFilter = newVal.toLowerCase();
+                    // --- MODIFIED: Search in both names ---
+                    return project.saveName().toLowerCase().contains(lowerCaseFilter)
+                            || project.objectName().toLowerCase().contains(lowerCaseFilter);
                 })
         );
 
@@ -121,8 +128,9 @@ public class LoadProjectDialogController {
         }
 
         Comparator<SavedProjectInfo> comparator = switch (mode) {
-            case NAME_ASC -> Comparator.comparing(SavedProjectInfo::displayName, String.CASE_INSENSITIVE_ORDER);
-            case NAME_DESC -> Comparator.comparing(SavedProjectInfo::displayName, String.CASE_INSENSITIVE_ORDER).reversed();
+            // --- MODIFIED: Sort by saveName ---
+            case NAME_ASC -> Comparator.comparing(SavedProjectInfo::saveName, String.CASE_INSENSITIVE_ORDER);
+            case NAME_DESC -> Comparator.comparing(SavedProjectInfo::saveName, String.CASE_INSENSITIVE_ORDER).reversed();
             case OLDEST_FIRST -> Comparator.comparingLong(SavedProjectInfo::timestamp);
             case NEWEST_FIRST -> Comparator.comparingLong(SavedProjectInfo::timestamp).reversed();
         };
@@ -133,11 +141,47 @@ public class LoadProjectDialogController {
 
     private void setupActions() {
         loadButton.disableProperty().bind(projectsTableView.getSelectionModel().selectedItemProperty().isNull());
+        deleteButton.disableProperty().bind(projectsTableView.getSelectionModel().selectedItemProperty().isNull());
         projectsTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && projectsTableView.getSelectionModel().getSelectedItem() != null) {
                 handleLoad();
             }
         });
+    }
+
+    @FXML
+    private void handleDelete() {
+        SavedProjectInfo selected = projectsTableView.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            return; // Should not happen if button is disabled, but good practice
+        }
+
+        // Create a confirmation dialog
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Delete Project");
+        confirmation.setHeaderText("Are you sure you want to permanently delete this save?");
+        confirmation.setContentText(
+                "Save Name: " + selected.saveName() + "\n" +
+                        "Object: " + selected.objectName() + "\n\n" +
+                        "This action cannot be undone."
+        );
+
+        Optional<ButtonType> result = confirmation.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // User confirmed, proceed with deletion
+            boolean deleted = saveAndLoadService.deleteProgress(selected.saveKey());
+            if (deleted) {
+                // If deletion from disk is successful, remove it from our list
+                masterData.remove(selected); // The TableView will update automatically
+            } else {
+                // Show an error if deletion fails
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Deletion Failed");
+                errorAlert.setHeaderText("Could not delete the project file from the disk.");
+                errorAlert.showAndWait();
+            }
+        }
     }
 
     @FXML

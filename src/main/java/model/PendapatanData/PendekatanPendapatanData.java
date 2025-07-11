@@ -21,6 +21,12 @@ public class PendekatanPendapatanData {
      * This is crucial for filtering projects in the load dialog.
      */
     private String projectTypeIdentifier;
+
+    /**
+     * The user-defined name for this specific save file (e.g., "Draft 1", "Final Version").
+     * This is distinct from the objectName.
+     */
+    private String saveName;
     /**
      * The name of the property being valued.
      * Corresponds to the 'Nama Objek' field.
@@ -122,6 +128,13 @@ public class PendekatanPendapatanData {
 
     public void setProjectTypeIdentifier(String projectTypeIdentifier) {
         this.projectTypeIdentifier = projectTypeIdentifier;
+    }
+    public String getSaveName() {
+        return saveName;
+    }
+
+    public void setSaveName(String saveName) {
+        this.saveName = saveName;
     }
     public String getObjectName() {
         return objectName;

@@ -7,9 +7,18 @@ import javafx.scene.control.*;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import model.PendapatanData.PendekatanPendapatanData;
 import service.SaveAndLoadService;
+import service.NavigationService;
+import controller.components.SaveProjectDialogController;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.List;
@@ -47,8 +56,9 @@ public class PendekatanPendapatanSimplifiedPage1Controller {
     private String projectSaveKey; // To store the unique ID for this project
     private final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
     private final SaveAndLoadService saveAndLoadService = SaveAndLoadService.getInstance();
+    private final NavigationService navigationService = NavigationService.getInstance();
     public static final String PROJECT_TYPE_ID = "INCOME_SIMPLIFIED";
-
+    private boolean isLoadedFromSave = false;
     /**
      * Initializes the controller with data. This is called by the HomeController after navigation.
      * It attempts to load existing data for the project or sets up a new, default form.
@@ -62,9 +72,10 @@ public class PendekatanPendapatanSimplifiedPage1Controller {
         Optional<PendekatanPendapatanData> loadedData = saveAndLoadService.loadProgress(this.projectSaveKey, PendekatanPendapatanData.class);
 
         if (loadedData.isPresent()) {
-            // If data exists, populate the UI with it
+            // --- MODIFIED ---
             System.out.println("Saved data found. Populating UI.");
             populateUI(loadedData.get());
+            isLoadedFromSave = true; // Mark that we've loaded data
         } else {
             // If no data, set up a fresh model and populate with default starter rows
             System.out.println("No saved data found. Setting up new form.");
@@ -72,6 +83,7 @@ public class PendekatanPendapatanSimplifiedPage1Controller {
             addExpenseRow(monthlyExpensesVBox, "Air (PDAM)", "200000");
             addExpenseRow(annualExpensesVBox, "Pajak Bumi dan Bangunan (PBB)", "1500000");
             addExpenseRow(annualExpensesVBox, "Iuran Lingkungan", "600000");
+            isLoadedFromSave = false; // This is a new project
         }
     }
 
@@ -80,28 +92,66 @@ public class PendekatanPendapatanSimplifiedPage1Controller {
      */
     @FXML
     private void handleSaveProgress() {
-        if (projectSaveKey == null || projectSaveKey.isBlank()) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Cannot save: Project key is not set.");
+        // 1. First, ensure the object has a name.
+        if (objectNameField.getText() == null || objectNameField.getText().isBlank()) {
+            showAlert(Alert.AlertType.WARNING, "Object Name Required", "Please provide an 'Object Name' before saving.");
             return;
         }
-        if (objectNameField.getText() == null || objectNameField.getText().isBlank()) {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Project Name Required");
-            dialog.setHeaderText("Please provide a name for this project before saving.");
-            dialog.setContentText("Project Name:");
 
-            Optional<String> result = dialog.showAndWait();
-            if (result.isPresent() && !result.get().isBlank()) {
-                objectNameField.setText(result.get());
-            } else {
-                // User cancelled or entered nothing, so we abort the save.
-                showAlert(Alert.AlertType.WARNING, "Save Canceled", "A project name is required to save.");
-                return;
+        // 2. Gather current data to get existing save name
+        PendekatanPendapatanData currentData = gatherDataFromUI();
+
+        try {
+            // 3. Launch the new save dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/javaFX/components/SaveProjectDialog.fxml"));
+            Parent root = loader.load();
+            SaveProjectDialogController dialogController = loader.getController();
+
+            // Pass current data to the dialog
+            dialogController.initData(currentData.getObjectName(), currentData.getSaveName(), isLoadedFromSave);
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Save Project");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(saveButton.getScene().getWindow());
+            dialogStage.setScene(new Scene(root));
+            dialogStage.showAndWait();
+
+            // 4. Process the result from the dialog
+            SaveProjectDialogController.SaveResult result = dialogController.getResult();
+            if (result.saveName() == null || result.saveName().isBlank()) {
+                if (result.action() != SaveProjectDialogController.SaveAction.CANCEL) {
+                    showAlert(Alert.AlertType.WARNING, "Save Canceled", "A name for the save file is required.");
+                }
+                return; // Abort if canceled or name is empty
             }
+
+            currentData.setSaveName(result.saveName());
+
+            switch (result.action()) {
+                case OVERWRITE:
+                    saveAndLoadService.saveProgress(currentData, this.projectSaveKey);
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Project overwritten successfully!");
+                    isLoadedFromSave = true; // It's now considered a saved project
+                    break;
+
+                case SAVE_AS_NEW:
+                    // Generate a new key and update our controller's state
+                    this.projectSaveKey = "PROJ-" + System.currentTimeMillis();
+                    saveAndLoadService.saveProgress(currentData, this.projectSaveKey);
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Project saved as a new file!");
+                    isLoadedFromSave = true; // It's now considered a saved project
+                    break;
+
+                case CANCEL:
+                    // Do nothing
+                    break;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not open the save project dialog.");
         }
-        PendekatanPendapatanData dataToSave = gatherDataFromUI();
-        saveAndLoadService.saveProgress(dataToSave, projectSaveKey);
-        showAlert(Alert.AlertType.INFORMATION, "Success", "Progress saved successfully for project " + projectSaveKey);
     }
 
     /**
@@ -113,11 +163,22 @@ public class PendekatanPendapatanSimplifiedPage1Controller {
             showAlert(Alert.AlertType.ERROR, "Error", "Cannot load: Project key is not set.");
             return;
         }
+        // Optional: Add a confirmation dialog here since this will discard current changes.
         saveAndLoadService.loadProgress(projectSaveKey, PendekatanPendapatanData.class)
                 .ifPresentOrElse(
-                        this::populateUI, // If data is found, populate the UI
+                        data -> {
+                            populateUI(data);
+                            isLoadedFromSave = true; // Mark as loaded
+                        },
                         () -> showAlert(Alert.AlertType.INFORMATION, "Not Found", "No saved data found for this project.")
                 );
+    }
+
+    @FXML
+    private void handleGoBack() {
+        // In a more advanced implementation, you could check for unsaved changes here
+        // and show a confirmation dialog before navigating away.
+        navigationService.navigate("/javaFX/Pendekatan_Pendapatan/Pendekatan_Pendapatan_Home.fxml");
     }
 
     /**
