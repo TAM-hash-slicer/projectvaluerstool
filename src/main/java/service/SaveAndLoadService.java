@@ -1,5 +1,6 @@
 package service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature; // Import this
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -8,9 +9,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections; // Import this
+import java.util.List;      // Import this
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors; // Import this
+import java.util.stream.Stream;     // Import this
 
 /**
  * A singleton service for saving and loading application progress as JSON files.
@@ -25,16 +30,13 @@ public class SaveAndLoadService {
     private static SaveAndLoadService instance;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Private constructor to ensure a single instance (Singleton pattern).
-     */
     private SaveAndLoadService() {
-        // Configure the JSON mapper
         this.objectMapper = new ObjectMapper();
-        // Indent output for human-readable JSON files
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        // This is a good practice to prevent future crashes if you add a field to a save file
+        // but try to load it with an older version of the code.
+        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        // Ensure the save directory exists
         try {
             Files.createDirectories(SAVE_PATH);
             LOGGER.info("Save directory ensured at: " + SAVE_PATH);
@@ -43,11 +45,6 @@ public class SaveAndLoadService {
         }
     }
 
-    /**
-     * Gets the single instance of the SaveAndLoadService.
-     *
-     * @return The singleton instance.
-     */
     public static synchronized SaveAndLoadService getInstance() {
         if (instance == null) {
             instance = new SaveAndLoadService();
@@ -55,13 +52,8 @@ public class SaveAndLoadService {
         return instance;
     }
 
-    /**
-     * Saves a data object to a JSON file. The file will be named based on the saveKey.
-     *
-     * @param dataObject The object containing the progress to save.
-     * @param saveKey    A unique identifier for the save file (e.g., "pendekatanPasar_P001").
-     * @param <T>        The type of the data object.
-     */
+    // ... (saveProgress, loadProgress, deleteProgress methods are unchanged) ...
+
     public <T> void saveProgress(T dataObject, String saveKey) {
         if (dataObject == null || saveKey == null || saveKey.trim().isEmpty()) {
             LOGGER.warning("Save aborted: data object or save key is null/empty.");
@@ -78,14 +70,6 @@ public class SaveAndLoadService {
         }
     }
 
-    /**
-     * Loads a data object from a JSON file.
-     *
-     * @param saveKey  The unique identifier for the save file to load.
-     * @param dataType The class of the object to be loaded (e.g., PendekatanPasarData.class).
-     * @param <T>      The type of the data object.
-     * @return An Optional containing the loaded object, or an empty Optional if loading fails or the file doesn't exist.
-     */
     public <T> Optional<T> loadProgress(String saveKey, Class<T> dataType) {
         if (saveKey == null || saveKey.trim().isEmpty()) {
             LOGGER.warning("Load aborted: save key is null or empty.");
@@ -109,12 +93,6 @@ public class SaveAndLoadService {
         }
     }
 
-    /**
-     * Deletes a specific save file.
-     *
-     * @param saveKey The unique identifier for the save file to delete.
-     * @return true if the file was successfully deleted, false otherwise.
-     */
     public boolean deleteProgress(String saveKey) {
         Path filePath = getFilePath(saveKey);
         try {
@@ -125,14 +103,31 @@ public class SaveAndLoadService {
         }
     }
 
+
     /**
-     * Constructs the full file path for a given save key.
+     * Scans the save directory and returns a list of all available save keys (filenames without extension).
      *
-     * @param saveKey The unique key.
-     * @return The full Path to the save file.
+     * @return A list of strings, where each string is a save key.
      */
+    public List<String> listSaveKeys() {
+        if (!Files.isDirectory(SAVE_PATH)) {
+            return Collections.emptyList();
+        }
+        try (Stream<Path> paths = Files.walk(SAVE_PATH, 1)) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .filter(name -> name.endsWith(".json"))
+                    .map(name -> name.substring(0, name.length() - 5)) // Remove ".json"
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Could not read save directory to list files.", e);
+            return Collections.emptyList();
+        }
+    }
+
     private Path getFilePath(String saveKey) {
-        // Sanitize the key to make it a valid filename
         String fileName = saveKey.replaceAll("[^a-zA-Z0-9_.-]", "_") + ".json";
         return SAVE_PATH.resolve(fileName);
     }

@@ -1,5 +1,7 @@
 package model.PendapatanData;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +16,22 @@ public class PendekatanPendapatanData {
 
     //region Property Details
     /**
+     * A unique identifier for the type of project this data represents.
+     * e.g., "INCOME_SIMPLIFIED", "MARKET_COMPARISON", etc.
+     * This is crucial for filtering projects in the load dialog.
+     */
+    private String projectTypeIdentifier;
+    /**
      * The name of the property being valued.
      * Corresponds to the 'Nama Objek' field.
      */
     private String objectName;
+
+    /**
+     * A Unix timestamp (milliseconds since epoch) of when this data was last saved.
+     * Used for sorting projects by date.
+     */
+    private long lastSavedTimestamp;
 
     /**
      * The full address of the property.
@@ -95,6 +109,20 @@ public class PendekatanPendapatanData {
     }
 
     //region Getters and Setters
+    public long getLastSavedTimestamp() {
+        return lastSavedTimestamp;
+    }
+
+    public void setLastSavedTimestamp(long lastSavedTimestamp) {
+        this.lastSavedTimestamp = lastSavedTimestamp;
+    }
+    public String getProjectTypeIdentifier() {
+        return projectTypeIdentifier;
+    }
+
+    public void setProjectTypeIdentifier(String projectTypeIdentifier) {
+        this.projectTypeIdentifier = projectTypeIdentifier;
+    }
     public String getObjectName() {
         return objectName;
     }
@@ -267,6 +295,7 @@ public class PendekatanPendapatanData {
          *
          * @return A BigDecimal representing the total of all monthly expenses.
          */
+        @JsonIgnore
         public BigDecimal getTotalMonthlyExpenses() {
             return monthlyExpenses.stream()
                     .map(ExpenseItem::getAmount)
@@ -308,6 +337,7 @@ public class PendekatanPendapatanData {
          *
          * @return A BigDecimal representing the total of all annual expenses.
          */
+        @JsonIgnore
         public BigDecimal getTotalAnnualExpenses() {
             return annualExpenses.stream()
                     .map(ExpenseItem::getAmount)

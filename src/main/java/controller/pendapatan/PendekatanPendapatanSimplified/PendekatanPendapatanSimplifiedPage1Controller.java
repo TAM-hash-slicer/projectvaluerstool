@@ -1,32 +1,29 @@
 package controller.pendapatan.PendekatanPendapatanSimplified;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import model.PendapatanData.PendekatanPendapatanData;
+import service.SaveAndLoadService;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.Optional;
 
 /**
  * Controller for the Simplified Income Approach form (Page 1).
  * Manages UI state, dynamic expense rows, real-time calculations,
- * and data binding with the PendekatanPendapatanData model.
+ * and save/load functionality.
  */
-public class PendekatanPendapatanSimplifiedPage1Controller implements Initializable {
+public class PendekatanPendapatanSimplifiedPage1Controller {
 
-    //region FXML Injections for Static Fields
+    //region FXML Injections
     @FXML private TextField objectNameField;
     @FXML private TextField addressField;
     @FXML private TextField objectTypeField;
@@ -37,54 +34,175 @@ public class PendekatanPendapatanSimplifiedPage1Controller implements Initializa
     @FXML private TextField rentalTermField;
     @FXML private TextField costBearerField;
     @FXML private TextArea additionalNotesArea;
-    //endregion
-
-    //region FXML Injections for Dynamic Sections
     @FXML private VBox monthlyExpensesVBox;
     @FXML private Button addMonthlyExpenseButton;
     @FXML private Label totalMonthlyLabel;
-
     @FXML private VBox annualExpensesVBox;
     @FXML private Button addAnnualExpenseButton;
     @FXML private Label totalAnnualLabel;
+    @FXML private Button saveButton;
+    @FXML private Button loadButton;
     //endregion
 
-    private PendekatanPendapatanData valuationData;
+    private String projectSaveKey; // To store the unique ID for this project
     private final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+    private final SaveAndLoadService saveAndLoadService = SaveAndLoadService.getInstance();
+    public static final String PROJECT_TYPE_ID = "INCOME_SIMPLIFIED";
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        this.valuationData = new PendekatanPendapatanData();
-        // Pre-populate the form with default expenses as a guide for the user
-        addExpenseRow(monthlyExpensesVBox, "Listrik", "500000");
-        addExpenseRow(monthlyExpensesVBox, "Air (PDAM)", "200000");
-        addExpenseRow(annualExpensesVBox, "Pajak Bumi dan Bangunan (PBB)", "1500000");
-        addExpenseRow(annualExpensesVBox, "Iuran Lingkungan", "600000");
+    /**
+     * Initializes the controller with data. This is called by the HomeController after navigation.
+     * It attempts to load existing data for the project or sets up a new, default form.
+     * @param projectSaveKey The unique identifier for the project file.
+     */
+    public void initData(String projectSaveKey) {
+        this.projectSaveKey = projectSaveKey;
+        System.out.println("Initializing page for project key: " + this.projectSaveKey);
+
+        // Try to load existing progress automatically when the page opens
+        Optional<PendekatanPendapatanData> loadedData = saveAndLoadService.loadProgress(this.projectSaveKey, PendekatanPendapatanData.class);
+
+        if (loadedData.isPresent()) {
+            // If data exists, populate the UI with it
+            System.out.println("Saved data found. Populating UI.");
+            populateUI(loadedData.get());
+        } else {
+            // If no data, set up a fresh model and populate with default starter rows
+            System.out.println("No saved data found. Setting up new form.");
+            addExpenseRow(monthlyExpensesVBox, "Listrik", "500000");
+            addExpenseRow(monthlyExpensesVBox, "Air (PDAM)", "200000");
+            addExpenseRow(annualExpensesVBox, "Pajak Bumi dan Bangunan (PBB)", "1500000");
+            addExpenseRow(annualExpensesVBox, "Iuran Lingkungan", "600000");
+        }
     }
 
     /**
-     * Event handler for the "+ Tambah Biaya Bulanan" button.
+     * Event handler for the "Save Progress" button.
      */
+    @FXML
+    private void handleSaveProgress() {
+        if (projectSaveKey == null || projectSaveKey.isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Cannot save: Project key is not set.");
+            return;
+        }
+        if (objectNameField.getText() == null || objectNameField.getText().isBlank()) {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Project Name Required");
+            dialog.setHeaderText("Please provide a name for this project before saving.");
+            dialog.setContentText("Project Name:");
+
+            Optional<String> result = dialog.showAndWait();
+            if (result.isPresent() && !result.get().isBlank()) {
+                objectNameField.setText(result.get());
+            } else {
+                // User cancelled or entered nothing, so we abort the save.
+                showAlert(Alert.AlertType.WARNING, "Save Canceled", "A project name is required to save.");
+                return;
+            }
+        }
+        PendekatanPendapatanData dataToSave = gatherDataFromUI();
+        saveAndLoadService.saveProgress(dataToSave, projectSaveKey);
+        showAlert(Alert.AlertType.INFORMATION, "Success", "Progress saved successfully for project " + projectSaveKey);
+    }
+
+    /**
+     * Event handler for the "Load Progress" button.
+     */
+    @FXML
+    private void handleLoadProgress() {
+        if (projectSaveKey == null || projectSaveKey.isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Cannot load: Project key is not set.");
+            return;
+        }
+        saveAndLoadService.loadProgress(projectSaveKey, PendekatanPendapatanData.class)
+                .ifPresentOrElse(
+                        this::populateUI, // If data is found, populate the UI
+                        () -> showAlert(Alert.AlertType.INFORMATION, "Not Found", "No saved data found for this project.")
+                );
+    }
+
+    /**
+     * Populates the entire UI form from a PendekatanPendapatanData object.
+     * @param data The data object to load into the UI.
+     */
+    private void populateUI(PendekatanPendapatanData data) {
+        // Populate static fields
+        objectNameField.setText(data.getObjectName());
+        addressField.setText(data.getAddress());
+        objectTypeField.setText(data.getObjectType());
+        landAreaField.setText(data.getLandArea() == 0 ? "" : String.valueOf(data.getLandArea()));
+        buildingAreaField.setText(data.getBuildingArea() == 0 ? "" : String.valueOf(data.getBuildingArea()));
+        builtSinceYearField.setText(data.getBuiltSinceYear() == 0 ? "" : String.valueOf(data.getBuiltSinceYear()));
+        rentalPriceField.setText(data.getRentalPrice() == null ? "" : data.getRentalPrice().toPlainString());
+        rentalTermField.setText(data.getRentalTerm());
+        costBearerField.setText(data.getCostBearer());
+        additionalNotesArea.setText(data.getAdditionalNotes());
+
+        // --- REFINED SECTION ---
+        // Populate dynamic monthly expenses
+        monthlyExpensesVBox.getChildren().clear();
+        List<PendekatanPendapatanData.ExpenseItem> monthlyItems = data.getTenantExpenses().getMonthlyExpenses();
+        if (monthlyItems != null) { // The list itself could be null if the JSON is malformed
+            for (PendekatanPendapatanData.ExpenseItem item : monthlyItems) {
+                String amountStr = (item.getAmount() != null) ? item.getAmount().toPlainString() : "0";
+                addExpenseRow(monthlyExpensesVBox, item.getName(), amountStr);
+            }
+        }
+
+        // Populate dynamic annual expenses
+        annualExpensesVBox.getChildren().clear();
+        List<PendekatanPendapatanData.ExpenseItem> annualItems = data.getOwnerExpenses().getAnnualExpenses();
+        if (annualItems != null) {
+            for (PendekatanPendapatanData.ExpenseItem item : annualItems) {
+                String amountStr = (item.getAmount() != null) ? item.getAmount().toPlainString() : "0";
+                addExpenseRow(annualExpensesVBox, item.getName(), amountStr);
+            }
+        }
+        // --- END REFINED SECTION ---
+
+        // Ensure totals are correct after populating
+        updateTotals();
+    }
+
+    /**
+     * Gathers all data from the UI controls and populates a new data model instance.
+     * @return The fully populated PendekatanPendapatanData object from the UI.
+     */
+    private PendekatanPendapatanData gatherDataFromUI() {
+        PendekatanPendapatanData data = new PendekatanPendapatanData();
+
+        // Populate static fields
+        data.setObjectName(objectNameField.getText());
+        data.setProjectTypeIdentifier(PROJECT_TYPE_ID);
+        data.setAddress(addressField.getText());
+        data.setLastSavedTimestamp(System.currentTimeMillis());
+        data.setObjectType(objectTypeField.getText());
+        data.setLandArea(parseDouble(landAreaField.getText()));
+        data.setBuildingArea(parseDouble(buildingAreaField.getText()));
+        data.setBuiltSinceYear(parseInt(builtSinceYearField.getText()));
+        data.setRentalPrice(parseBigDecimal(rentalPriceField.getText()));
+        data.setRentalTerm(rentalTermField.getText());
+        data.setCostBearer(costBearerField.getText());
+        data.setAdditionalNotes(additionalNotesArea.getText());
+
+        // Populate dynamic expenses
+        gatherExpensesFrom(monthlyExpensesVBox, data.getTenantExpenses().getMonthlyExpenses());
+        gatherExpensesFrom(annualExpensesVBox, data.getOwnerExpenses().getAnnualExpenses());
+
+        return data;
+    }
+
+    //region UI Helper Methods (Add/Remove Rows, Calculate Totals)
+
     @FXML
     private void handleAddMonthlyExpense() {
         addExpenseRow(monthlyExpensesVBox, "", "");
     }
 
-    /**
-     * Event handler for the "+ Tambah Biaya Tahunan" button.
-     */
     @FXML
     private void handleAddAnnualExpense() {
         addExpenseRow(annualExpensesVBox, "", "");
     }
 
-    /**
-     * Core logic to programmatically create and add a new expense row to a VBox.
-     *
-     * @param parentVBox The VBox to add the new row to (either monthly or annual).
-     * @param name       The default name for the expense.
-     * @param amount     The default amount for the expense.
-     */
     private void addExpenseRow(VBox parentVBox, String name, String amount) {
         HBox expenseRow = new HBox(10);
         expenseRow.setAlignment(Pos.CENTER_LEFT);
@@ -100,23 +218,18 @@ public class PendekatanPendapatanSimplifiedPage1Controller implements Initializa
         Button removeButton = new Button("X");
         removeButton.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-weight: bold;");
 
-        // Action to remove the row
         removeButton.setOnAction(event -> {
             parentVBox.getChildren().remove(expenseRow);
             updateTotals();
         });
 
-        // Listener for real-time calculation
+        // Add listener to update totals whenever the amount changes
         amountField.textProperty().addListener((obs, oldVal, newVal) -> updateTotals());
 
         expenseRow.getChildren().addAll(nameField, amountField, removeButton);
         parentVBox.getChildren().add(expenseRow);
-        updateTotals(); // Update totals after adding a new row
     }
 
-    /**
-     * A single method to update both monthly and annual totals.
-     */
     private void updateTotals() {
         BigDecimal monthlyTotal = calculateTotalFor(monthlyExpensesVBox);
         BigDecimal annualTotal = calculateTotalFor(annualExpensesVBox);
@@ -125,74 +238,17 @@ public class PendekatanPendapatanSimplifiedPage1Controller implements Initializa
         totalAnnualLabel.setText(currencyFormatter.format(annualTotal));
     }
 
-    /**
-     * Generic calculation logic for a given VBox of expenses.
-     *
-     * @param expenseVBox The VBox containing expense rows.
-     * @return The total sum of amounts as a BigDecimal.
-     */
     private BigDecimal calculateTotalFor(VBox expenseVBox) {
-        BigDecimal total = BigDecimal.ZERO;
-        for (Node node : expenseVBox.getChildren()) {
-            if (node instanceof HBox) {
-                HBox row = (HBox) node;
-                // Find the amount TextField (assuming it's the second-to-last element)
-                Node amountNode = row.getChildren().get(1);
-                if (amountNode instanceof TextField) {
-                    TextField amountField = (TextField) amountNode;
-                    try {
-                        BigDecimal amount = new BigDecimal(amountField.getText().trim());
-                        total = total.add(amount);
-                    } catch (NumberFormatException e) {
-                        // Ignore invalid numbers, or you could style the field red
-                    }
-                }
-            }
-        }
-        return total;
+        return expenseVBox.getChildren().stream()
+                .filter(HBox.class::isInstance)
+                .map(node -> (HBox) node)
+                .map(row -> (TextField) row.getChildren().get(1))
+                .map(amountField -> parseBigDecimal(amountField.getText()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    /**
-     * Gathers all data from the UI controls and populates the valuationData model instance.
-     * This method should be called before saving or processing the valuation.
-     *
-     * @return The fully populated PendekatanPendapatanData object.
-     */
-    public PendekatanPendapatanData gatherData() {
-        // Populate static fields
-        valuationData.setObjectName(objectNameField.getText());
-        valuationData.setAddress(addressField.getText());
-        valuationData.setObjectType(objectTypeField.getText());
-        try {
-            valuationData.setLandArea(Double.parseDouble(landAreaField.getText()));
-            valuationData.setBuildingArea(Double.parseDouble(buildingAreaField.getText()));
-            valuationData.setBuiltSinceYear(Integer.parseInt(builtSinceYearField.getText()));
-            valuationData.setRentalPrice(new BigDecimal(rentalPriceField.getText()));
-        } catch (NumberFormatException e) {
-            // Handle cases where number fields are empty or invalid
-            System.err.println("Invalid number format in one of the fields: " + e.getMessage());
-        }
-        valuationData.setRentalTerm(rentalTermField.getText());
-        valuationData.setCostBearer(costBearerField.getText());
-        valuationData.setAdditionalNotes(additionalNotesArea.getText());
-
-        // Populate dynamic monthly expenses
-        gatherExpensesFrom(monthlyExpensesVBox, valuationData.getTenantExpenses().getMonthlyExpenses());
-
-        // Populate dynamic annual expenses
-        gatherExpensesFrom(annualExpensesVBox, valuationData.getOwnerExpenses().getAnnualExpenses());
-
-        return valuationData;
-    }
-
-    /**
-     * Helper method to iterate through an expense VBox and populate a list of ExpenseItems.
-     *
-     * @param expenseVBox The UI container for expense rows.
-     * @param expenseList The model's list to populate.
-     */
     private void gatherExpensesFrom(VBox expenseVBox, List<PendekatanPendapatanData.ExpenseItem> expenseList) {
-        expenseList.clear(); // Clear previous data before gathering new data
+        expenseList.clear();
         for (Node node : expenseVBox.getChildren()) {
             if (node instanceof HBox) {
                 HBox row = (HBox) node;
@@ -200,17 +256,48 @@ public class PendekatanPendapatanSimplifiedPage1Controller implements Initializa
                 TextField amountField = (TextField) row.getChildren().get(1);
 
                 String name = nameField.getText();
-                BigDecimal amount = BigDecimal.ZERO;
-                try {
-                    amount = new BigDecimal(amountField.getText());
-                } catch (NumberFormatException e) {
-                    // Default to zero if amount is invalid
-                }
-
-                if (!name.isBlank()) {
+                if (name != null && !name.isBlank()) {
+                    BigDecimal amount = parseBigDecimal(amountField.getText());
                     expenseList.add(new PendekatanPendapatanData.ExpenseItem(name, amount));
                 }
             }
         }
     }
+
+    //endregion
+
+    //region Safe Parsing and Alert Helpers
+
+    private BigDecimal parseBigDecimal(String value) {
+        try {
+            return new BigDecimal(value.trim());
+        } catch (NumberFormatException | NullPointerException e) {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    private double parseDouble(String value) {
+        try {
+            return Double.parseDouble(value.trim());
+        } catch (NumberFormatException | NullPointerException e) {
+            return 0.0;
+        }
+    }
+
+    private int parseInt(String value) {
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException | NullPointerException e) {
+            return 0;
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    //endregion
 }

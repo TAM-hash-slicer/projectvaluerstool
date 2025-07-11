@@ -128,6 +128,12 @@
                                 </Label>
                             </children>
                         </HBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="10.0" style="-fx-padding: 15 0 0 0;">
+                            <children>
+                                <Button fx:id="loadButton" mnemonicParsing="false" onAction="#handleLoadProgress" text="Load Progress" />
+                                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveProgress" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Save Progress" />
+                            </children>
+                        </HBox>
                     </children>
                 </VBox>
 

@@ -48,11 +48,13 @@ public class NavigationService {
      * The primary navigation method. Loads the specified FXML file into the main content pane.
      *
      * @param fxmlPath The path to the FXML file to load (e.g., "/javaFX/some/Page.fxml").
+     * @param <T> The type of the controller.
+     * @return The controller instance of the loaded FXML, or null if loading fails.
      */
-    public void navigate(String fxmlPath) {
+    public <T> T navigate(String fxmlPath) {
         if (mainContentPane == null) {
             System.err.println("Navigation Error: Main content pane has not been set in NavigationService.");
-            return;
+            return null;
         }
 
         try {
@@ -60,6 +62,7 @@ public class NavigationService {
             FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(getClass().getResource(fxmlPath)));
             Node page = loader.load();
             mainContentPane.setCenter(page);
+            return loader.getController(); // <-- KEY CHANGE: Return the controller
         } catch (IOException e) {
             System.err.println("Failed to load page: " + fxmlPath);
             e.printStackTrace();
@@ -68,5 +71,6 @@ public class NavigationService {
             System.err.println("Navigation Error: FXML file not found at path: " + fxmlPath);
             e.printStackTrace();
         }
+        return null; // Return null on failure
     }
 }
